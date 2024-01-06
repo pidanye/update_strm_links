@@ -31,4 +31,4 @@ fi
 PROCESS_SCRIPT_COMMAND="$(curl -s "$PROCESS_SCRIPT_URL")"
 screen -dmS "$SCRIPT_NAME" /bin/bash -c "$PROCESS_SCRIPT_COMMAND" _ "$SOURCE_DIR" "$LINK_DIR" "$NAS_ADDRESS"
 
-echo "Screen 会话 '$SCRIPT_NAME' 已启动。您可以使用 'screen -r $SCRIPT_NAME' 命令进行必要的配置。"
+echo "Screen 会话 '$SCRIPT_NAME' 已启动。您可以使用 'screen -r $SCRIPT_NAME' 命令查看运行状态。"

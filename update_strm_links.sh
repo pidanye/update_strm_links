@@ -1,9 +1,7 @@
 #!/bin/bash
 
 SCRIPT_NAME="update_strm_links"
-SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
 PROCESS_SCRIPT_URL="https://raw.githubusercontent.com/pidanye/update_strm_links/main/update_strm_links_process.sh"
-PROCESS_SCRIPT="$SCRIPT_DIR/update_strm_links_process.sh"
 
 read -p "请输入源媒体库地址: " SOURCE_DIR
 read -p "请输入目标地址: " LINK_DIR
@@ -26,8 +24,8 @@ if screen -list | grep -q "\.$SCRIPT_NAME"; then
     screen -S "$SCRIPT_NAME" -X quit
 fi
 
-curl -o "$PROCESS_SCRIPT" "$PROCESS_SCRIPT_URL"
-chmod +x "$PROCESS_SCRIPT"
-screen -dmS "$SCRIPT_NAME" "$PROCESS_SCRIPT" "$SOURCE_DIR" "$LINK_DIR" "$NAS_ADDRESS"
+# 从GitHub获取子脚本并在screen会话中直接执行
+PROCESS_SCRIPT_COMMAND="$(curl -s "$PROCESS_SCRIPT_URL")"
+screen -dmS "$SCRIPT_NAME" /bin/bash -c "$PROCESS_SCRIPT_COMMAND" _ "$SOURCE_DIR" "$LINK_DIR" "$NAS_ADDRESS"
 
 echo "Screen 会话 '$SCRIPT_NAME' 已启动。您可以使用 'screen -r $SCRIPT_NAME' 命令进行必要的配置。"

@@ -7,11 +7,24 @@ SOURCE_DIR="$1"
 LINK_DIR="$2"
 NAS_ADDRESS="$3"
 SCRIPT_DIR="$(dirname "$(readlink -f "$0")")"
+PROCESSED_LOG="$SCRIPT_DIR/processed_files.log"
 LOG_FILE="$SCRIPT_DIR/update_strm_links.log"
 TIME_LOG="$SCRIPT_DIR/time_log.txt"
 SCREEN_SESSION="update_strm_links"
 
 trap 'echo "捕获到 SIGINT，正在退出。"; screen -S "$SCREEN_SESSION" -X quit; exit 0' SIGINT
+
+# 检查文件是否已处理
+has_been_processed() {
+    local file="$1"
+    grep -Fqe "$file" "$PROCESSED_LOG"
+}
+
+# 记录处理过的文件
+log_processed_file() {
+    local file="$1"
+    echo "$file" >> "$PROCESSED_LOG"
+}
 
 process_file() {
     file="$1"
@@ -20,17 +33,23 @@ process_file() {
     target_file="$LINK_DIR/$relative_path"
     temp_log="$LOG_FILE.tmp"
 
+    if has_been_processed "$file"; then
+        return
+    fi
+
     mkdir -p "$(dirname "$target_file")"
     if [[ $file == *.strm ]]; then
         sed "s#DOCKER_ADDRESS#$NAS_ADDRESS#g" "$file" > "$target_file"
     else
         ln -sfn "$file" "$target_file"
     fi
+
     echo "$file" >> "$temp_log" && mv "$temp_log" "$LOG_FILE"
+    log_processed_file "$file"
 }
 
-export -f process_file
-export SOURCE_DIR LINK_DIR LOG_FILE
+export -f process_file has_been_processed log_processed_file
+export SOURCE_DIR LINK_DIR LOG_FILE PROCESSED_LOG
 
 start_time=$(date +%s)
 find "$SOURCE_DIR" -type f -print0 | xargs -0 -n 1 -P 0 -I {} bash -c 'process_file "$@"' _ {}

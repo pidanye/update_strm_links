@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
+
 SOURCE_DIR="$1"
 LINK_DIR="$2"
 NAS_ADDRESS="$3"

@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export LANG=C.UTF-8
+export LC_ALL=C.UTF-8
+
 SCRIPT_NAME="update_strm_links"
 PROCESS_SCRIPT_URL="https://raw.githubusercontent.com/pidanye/update_strm_links/main/update_strm_links_process.sh"
 
